@@ -15,10 +15,7 @@ import org.springframework.transaction.reactive.TransactionalOperator
 import org.springframework.transaction.reactive.executeAndAwait
 
 private fun Browser.scrapeGameInfo(season: Int, month: Int, series: SeriesType): List<GameInfo> {
-    /**
-     * scrapeAndParseGameInfo()는 실제 구현 필요
-     */
-    return scrapeAndParseGameInfo(season, month, series)
+    TODO("크롤링 로직 실제 구현 필요")
 }
 
 @Service
