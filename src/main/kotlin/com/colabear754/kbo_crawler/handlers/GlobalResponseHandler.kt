@@ -8,6 +8,7 @@ import org.springframework.http.converter.HttpMessageConverter
 import org.springframework.http.server.ServerHttpRequest
 import org.springframework.http.server.ServerHttpResponse
 import org.springframework.http.server.ServletServerHttpResponse
+import org.springframework.web.ErrorResponse
 import org.springframework.web.bind.annotation.RestControllerAdvice
 import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyAdvice
 
@@ -28,9 +29,13 @@ class GlobalResponseHandler : ResponseBodyAdvice<Any?> {
         request: ServerHttpRequest,
         response: ServerHttpResponse
     ): Any? {
-        return if (body?.javaClass != GlobalResponse::class.java) {
-            val servletResponse = (response as? ServletServerHttpResponse)?.servletResponse
-            GlobalResponse(HttpStatus.valueOf(servletResponse?.status ?: 500), "성공", body)
-        } else body
+        return when (body?.javaClass) {
+            GlobalResponse::class.java, ErrorResponse::class.java -> body
+            else -> GlobalResponse(
+                HttpStatus.valueOf((response as? ServletServerHttpResponse)?.servletResponse?.status ?: 500),
+                "성공",
+                body
+            )
+        }
     }
 }
