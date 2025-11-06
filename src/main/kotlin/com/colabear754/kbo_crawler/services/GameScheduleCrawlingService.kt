@@ -51,8 +51,10 @@ class GameScheduleCrawlingService(
                     savedCount++
                     continue
                 }
-                existingGame.update(gameInfo)
-                modifiedCount++
+                val isUpdated = existingGame.update(gameInfo)
+                if (isUpdated) {
+                    modifiedCount++
+                }
             }
         }
 

@@ -48,7 +48,15 @@ class GameInfo(
     lateinit var modifiedAt: LocalDateTime
         protected set
 
-    fun update(gameInfo: GameInfo) {
+    fun update(gameInfo: GameInfo): Boolean {
+        val isUpdated = this.time?.equals(gameInfo.time) == false
+                || this.homeScore != gameInfo.homeScore
+                || this.awayScore != gameInfo.awayScore
+                || this.stadium != gameInfo.stadium
+                || this.relay != gameInfo.relay
+                || this.gameStatus != gameInfo.gameStatus
+                || this.cancellationReason != gameInfo.cancellationReason
+
         this.time = gameInfo.time
         this.homeScore = gameInfo.homeScore
         this.awayScore = gameInfo.awayScore
@@ -56,5 +64,7 @@ class GameInfo(
         this.relay = gameInfo.relay
         this.gameStatus = gameInfo.gameStatus
         this.cancellationReason = gameInfo.cancellationReason
+
+        return isUpdated
     }
 }
