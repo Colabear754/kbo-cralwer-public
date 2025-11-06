@@ -28,14 +28,16 @@ class GameScheduleCrawlingService(
         series: SeriesType
     ): CollectDataResponse {
         // 1월부터 12월까지 해당 시즌/시리즈의 경기 일정을 비동기 수집 후 취합
-        val seasonGameInfo = Playwright.create().use { playwright ->
-            playwright.chromium().launch(BrowserType.LaunchOptions().apply { headless = true }).use { browser ->
-                coroutineScope {
-                    (1..12).map { month -> async { browser.scrapeGameInfo(season, month, series) } }
-                        .awaitAll().flatten()
-                }
-            }
-        }
+        val seasonGameInfo = launchChromium { coroutineScope {
+            (1..12).map { month -> async { scrapeGameInfo(season, month, series) } }
+                .awaitAll().flatten()
+        } }
+
+        return saveOrUpdateGameInfo(seasonGameInfo)
+    }
+
+    private suspend fun saveOrUpdateGameInfo(seasonGameInfo: List<GameInfo>): CollectDataResponse {
+        var savedCount = 0
         var modifiedCount = 0
 
         operator.executeAndAwait {
@@ -46,6 +48,7 @@ class GameScheduleCrawlingService(
                 val existingGame = existingGamesMap[gameInfo.gameKey]
                 if (existingGame == null) {
                     gameInfoRepository.save(gameInfo)
+                    savedCount++
                     continue
                 }
                 existingGame.update(gameInfo)
@@ -53,6 +56,13 @@ class GameScheduleCrawlingService(
             }
         }
 
-        return CollectDataResponse(seasonGameInfo.size, modifiedCount)
+        return CollectDataResponse(seasonGameInfo.size, savedCount, modifiedCount)
     }
+
+    private suspend fun <R> launchChromium(action: suspend Browser.() -> R): R = Playwright.create().use { playwright ->
+        playwright.chromium().launch(BrowserType.LaunchOptions().apply { headless = true }).use { browser ->
+            browser.action()
+        }
+    }
+
 }
