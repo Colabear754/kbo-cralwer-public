@@ -2,5 +2,6 @@ package com.colabear754.kbo_crawler.dto.responses
 
 data class CollectDataResponse(
     val collectedCount: Int,
+    val savedCount: Int,
     val modifiedCount: Int
 )
