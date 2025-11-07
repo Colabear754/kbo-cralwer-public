@@ -3,7 +3,6 @@ package com.colabear754.kbo_crawler.services
 import com.colabear754.kbo_crawler.domain.entities.GameInfo
 import com.colabear754.kbo_crawler.domain.enums.SeriesType
 import com.colabear754.kbo_crawler.dto.responses.CollectDataResponse
-import com.colabear754.kbo_crawler.repositories.GameInfoRepository
 import com.microsoft.playwright.Browser
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
@@ -11,8 +10,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import org.springframework.stereotype.Service
-import org.springframework.transaction.reactive.TransactionalOperator
-import org.springframework.transaction.reactive.executeAndAwait
 
 private fun Browser.scrapeGameInfo(season: Int, month: Int, series: SeriesType): List<GameInfo> {
     TODO("크롤링 로직 실제 구현 필요")
@@ -20,8 +17,7 @@ private fun Browser.scrapeGameInfo(season: Int, month: Int, series: SeriesType):
 
 @Service
 class GameScheduleCrawlingService(
-    private val gameInfoRepository: GameInfoRepository,
-    private val operator: TransactionalOperator
+    private val gameInfoDataService: GameInfoDataService
 ) {
     suspend fun collectAndSaveSeasonGameInfo(
         season: Int,
@@ -37,32 +33,7 @@ class GameScheduleCrawlingService(
             }
         } }
 
-        return saveOrUpdateGameInfo(seasonGameInfo)
-    }
-
-    private suspend fun saveOrUpdateGameInfo(seasonGameInfo: List<GameInfo>): CollectDataResponse {
-        var savedCount = 0
-        var modifiedCount = 0
-
-        operator.executeAndAwait {
-            val existingGamesMap = gameInfoRepository.findByGameKeyIn(seasonGameInfo.map { it.gameKey })
-                .associateBy { it.gameKey }
-
-            for (gameInfo in seasonGameInfo) {
-                val existingGame = existingGamesMap[gameInfo.gameKey]
-                if (existingGame == null) {
-                    gameInfoRepository.save(gameInfo)
-                    savedCount++
-                    continue
-                }
-                val isUpdated = existingGame.update(gameInfo)
-                if (isUpdated) {
-                    modifiedCount++
-                }
-            }
-        }
-
-        return CollectDataResponse(seasonGameInfo.size, savedCount, modifiedCount)
+        return gameInfoDataService.saveOrUpdateGameInfo(seasonGameInfo)
     }
 
     private suspend fun <R> launchChromium(action: suspend Browser.() -> R): R = Playwright.create().use { playwright ->
