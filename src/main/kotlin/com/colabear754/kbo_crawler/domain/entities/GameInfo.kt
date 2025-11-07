@@ -41,8 +41,8 @@ class GameInfo(
     @Size(max = 20)
     @Column(length = 20)
     var stadium: String,
-    @Size(max = 30)
-    @Column(length = 30)
+    @Size(max = 100)
+    @Column(length = 100)
     var relay: String,
     @Enumerated(EnumType.STRING)
     var gameStatus: GameStatus,
