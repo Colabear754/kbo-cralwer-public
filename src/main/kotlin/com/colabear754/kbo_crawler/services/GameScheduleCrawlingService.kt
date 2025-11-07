@@ -25,12 +25,16 @@ class GameScheduleCrawlingService(
 ) {
     suspend fun collectAndSaveSeasonGameInfo(
         season: Int,
-        series: SeriesType
+        seriesType: SeriesType?
     ): CollectDataResponse {
+        // seriesType이 null이면 전체 시리즈 수집
+        val seriesTypes = seriesType?.let { listOf(it) } ?: SeriesType.entries
         // 1월부터 12월까지 해당 시즌/시리즈의 경기 일정을 비동기 수집 후 취합
         val seasonGameInfo = launchChromium { coroutineScope {
-            (1..12).map { month -> async { scrapeGameInfo(season, month, series) } }
-                .awaitAll().flatten()
+            seriesTypes.flatMap { type ->
+                (1..12).map { month -> async { scrapeGameInfo(season, month, type) } }
+                    .awaitAll().flatten()
+            }
         } }
 
         return saveOrUpdateGameInfo(seasonGameInfo)
@@ -66,5 +70,4 @@ class GameScheduleCrawlingService(
             browser.action()
         }
     }
-
 }

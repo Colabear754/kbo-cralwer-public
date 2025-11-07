@@ -3,6 +3,7 @@ package com.colabear754.kbo_crawler.crawlers
 import com.colabear754.kbo_crawler.domain.entities.GameInfo
 import com.colabear754.kbo_crawler.domain.enums.CancellationReason
 import com.colabear754.kbo_crawler.domain.enums.GameStatus
+import com.colabear754.kbo_crawler.domain.enums.SeriesType
 import com.colabear754.kbo_crawler.domain.enums.Team
 import com.microsoft.playwright.Locator
 import java.time.LocalDate
@@ -19,7 +20,7 @@ import kotlin.text.take
 import kotlin.text.toInt
 import kotlin.text.trim
 
-internal fun parseGameSchedule(locators: List<Locator>, season: Int): List<GameInfo> {
+internal fun parseGameSchedule(locators: List<Locator>, season: Int, seriesType: SeriesType): List<GameInfo> {
     val yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd")
     val gameCountMap = mutableMapOf<String, Int>()
     val gameInfoList = mutableListOf<GameInfo>()
@@ -45,7 +46,7 @@ internal fun parseGameSchedule(locators: List<Locator>, season: Int): List<GameI
 
         val timeText = cells[startIndex].innerText().replace("<b>", "").replace("</b>", "").trim()
         val time = LocalTime.parse(timeText)
-
+        // 경기 정보 파싱
         val playRecord = cells[startIndex + 1].locator("span").allInnerTexts()
         val awayTeam = Team.findByTeamName(playRecord.first())
         val homeTeam = Team.findByTeamName(playRecord.last())
@@ -69,6 +70,7 @@ internal fun parseGameSchedule(locators: List<Locator>, season: Int): List<GameI
 
         val gameInfo = GameInfo(
             "$gameKey-$count",
+            seriesType,
             currentDate,
             time,
             homeTeam,

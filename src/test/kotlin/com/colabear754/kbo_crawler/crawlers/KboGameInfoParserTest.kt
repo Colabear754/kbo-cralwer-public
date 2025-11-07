@@ -2,6 +2,7 @@ package com.colabear754.kbo_crawler.crawlers
 
 import com.colabear754.kbo_crawler.domain.enums.CancellationReason
 import com.colabear754.kbo_crawler.domain.enums.GameStatus
+import com.colabear754.kbo_crawler.domain.enums.SeriesType
 import com.colabear754.kbo_crawler.domain.enums.Team
 import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Page
@@ -27,11 +28,12 @@ class KboGameInfoParserTest : StringSpec({
         // given
         val html = javaClass.getResource("/finished-games.html")?.readText() ?: ""
         // when
-        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025) }
+        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025, SeriesType.REGULAR_SEASON) }
         // then
         gameSchedule.size shouldBe 5
         // 공통: 날짜, 시간, 경기 상태
         gameSchedule.forAll {
+            it.seriesType shouldBe SeriesType.REGULAR_SEASON
             it.date shouldBe LocalDate.of(2025, 5, 2)
             it.time shouldBe LocalTime.of(18, 30)
             it.gameStatus shouldBe GameStatus.FINISHED
@@ -82,9 +84,12 @@ class KboGameInfoParserTest : StringSpec({
         // given
         val html = javaClass.getResource("/scheduled-games.html")?.readText() ?: ""
         // when
-        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025) }
+        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025, SeriesType.REGULAR_SEASON) }
         // then
         gameSchedule.size shouldBe 3
+        gameSchedule.forAll {
+            it.seriesType shouldBe SeriesType.REGULAR_SEASON
+        }
         // 1경기
         gameSchedule[0].gameKey shouldBe "20251029-LG-HANWHA-1"
         gameSchedule[0].date shouldBe LocalDate.of(2025, 10, 29)
@@ -124,11 +129,12 @@ class KboGameInfoParserTest : StringSpec({
         // given
         val html = javaClass.getResource("/cancelled-games.html")?.readText() ?: ""
         // when
-        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025) }
+        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025, SeriesType.REGULAR_SEASON) }
         // then
         gameSchedule.size shouldBe 5
         // 공통: 날짜, 시간
         gameSchedule.forAll {
+            it.seriesType shouldBe SeriesType.REGULAR_SEASON
             it.date shouldBe LocalDate.of(2025, 7, 18)
             it.time shouldBe LocalTime.of(18, 30)
         }
@@ -186,11 +192,12 @@ class KboGameInfoParserTest : StringSpec({
         // given
         val html = javaClass.getResource("/double-header-games.html")?.readText() ?: ""
         // when
-        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025) }
+        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025, SeriesType.REGULAR_SEASON) }
         // then
         gameSchedule.size shouldBe 8
         // 공통: 날짜, 경기 상태
         gameSchedule.forAll {
+            it.seriesType shouldBe SeriesType.REGULAR_SEASON
             it.date shouldBe LocalDate.of(2025, 5, 11)
             it.gameStatus shouldBe GameStatus.FINISHED
         }
@@ -272,11 +279,12 @@ class KboGameInfoParserTest : StringSpec({
         // given
         val html = javaClass.getResource("/travel-day.html")?.readText() ?: ""
         // when
-        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025) }
+        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025, SeriesType.REGULAR_SEASON) }
         // then
         gameSchedule.size shouldBe 1
         val game = gameSchedule[0]
         game.gameKey shouldBe "20251027-HANWHA-LG-1"
+        game.seriesType shouldBe SeriesType.REGULAR_SEASON
         game.date shouldBe LocalDate.of(2025, 10, 27)
         game.time shouldBe LocalTime.of(18, 30)
         game.awayTeam shouldBe Team.HANWHA
@@ -292,7 +300,7 @@ class KboGameInfoParserTest : StringSpec({
         // given
         val html = javaClass.getResource("/no-games.html")?.readText() ?: ""
         // when
-        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025) }
+        val gameSchedule = playwrightTest(html) { parseGameSchedule(locator("#tblScheduleList > tbody").locator("tr").all(), 2025, SeriesType.REGULAR_SEASON) }
         // then
         gameSchedule.size shouldBe 0
     }
