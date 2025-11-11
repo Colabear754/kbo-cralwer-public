@@ -1,0 +1,48 @@
+package com.colabear754.kbo_crawler.api.services
+
+import com.colabear754.kbo_crawler.api.domain.entities.GameInfo
+import com.colabear754.kbo_crawler.api.domain.enums.Team
+import com.colabear754.kbo_crawler.api.dto.responses.CollectDataResponse
+import com.colabear754.kbo_crawler.api.dto.responses.FindGameInfoResponse
+import com.colabear754.kbo_crawler.api.repositories.GameInfoRepository
+import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
+
+@Service
+class GameInfoDataService(
+    private val gameInfoRepository: GameInfoRepository
+) {
+    @Transactional
+    fun saveOrUpdateGameInfo(seasonGameInfo: List<GameInfo>): CollectDataResponse {
+        var savedCount = 0
+        var modifiedCount = 0
+
+        val existingGamesMap = gameInfoRepository.findByGameKeyIn(seasonGameInfo.map { it.gameKey })
+            .associateBy { it.gameKey }
+
+        for (gameInfo in seasonGameInfo) {
+            val existingGame = existingGamesMap[gameInfo.gameKey]
+            if (existingGame == null) {
+                gameInfoRepository.save(gameInfo)
+                savedCount++
+                continue
+            }
+            val isUpdated = existingGame.update(gameInfo)
+            if (isUpdated) {
+                modifiedCount++
+            }
+        }
+
+        return CollectDataResponse(seasonGameInfo.size, savedCount, modifiedCount)
+    }
+
+    fun findGameInfoByTeamAndDate(date: LocalDate, team: Team): List<FindGameInfoResponse> {
+        return gameInfoRepository.findByDateAndTeam(date, team)
+            .map(FindGameInfoResponse::from)
+    }
+
+    fun findGameInfoByGameKey(gameKey: String): FindGameInfoResponse? {
+        return FindGameInfoResponse.from(gameInfoRepository.findByGameKey(gameKey))
+    }
+}
