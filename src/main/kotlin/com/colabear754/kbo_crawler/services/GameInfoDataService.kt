@@ -1,10 +1,13 @@
 package com.colabear754.kbo_crawler.services
 
 import com.colabear754.kbo_crawler.domain.entities.GameInfo
+import com.colabear754.kbo_crawler.domain.enums.Team
 import com.colabear754.kbo_crawler.dto.responses.CollectDataResponse
+import com.colabear754.kbo_crawler.dto.responses.FindGameInfoResponse
 import com.colabear754.kbo_crawler.repositories.GameInfoRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import java.time.LocalDate
 
 @Service
 class GameInfoDataService(
@@ -32,5 +35,10 @@ class GameInfoDataService(
         }
 
         return CollectDataResponse(seasonGameInfo.size, savedCount, modifiedCount)
+    }
+
+    fun findGameInfoByTeamAndDate(date: LocalDate, team: Team): List<FindGameInfoResponse> {
+        return gameInfoRepository.findByDateAndTeam(date, team)
+            .map(FindGameInfoResponse::from)
     }
 }

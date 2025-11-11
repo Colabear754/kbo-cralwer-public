@@ -9,16 +9,6 @@ import com.microsoft.playwright.Locator
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
-import kotlin.collections.first
-import kotlin.collections.last
-import kotlin.collections.map
-import kotlin.collections.set
-import kotlin.text.contains
-import kotlin.text.replace
-import kotlin.text.split
-import kotlin.text.take
-import kotlin.text.toInt
-import kotlin.text.trim
 
 internal fun parseGameSchedule(locators: List<Locator>, season: Int, seriesType: SeriesType): List<GameInfo> {
     val yyyyMMdd = DateTimeFormatter.ofPattern("yyyyMMdd")
@@ -78,7 +68,7 @@ internal fun parseGameSchedule(locators: List<Locator>, season: Int, seriesType:
             homeScore,
             awayScore,
             cells[startIndex + 6].innerText().trim(),
-            cells[startIndex + 4].innerHTML().replace("<br>", ", ").trim(),
+            cells[startIndex + 4].innerHTML().replace("<br>", ",").trim(),
             gameStatus,
             cancellationReason
         )
