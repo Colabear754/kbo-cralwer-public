@@ -3,7 +3,6 @@ package com.colabear754.kbo_crawler.api.config
 import com.colabear754.kbo_crawler.api.dto.global.GlobalResponse
 import org.springframework.beans.factory.config.BeanPostProcessor
 import org.springframework.core.MethodParameter
-import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.NativeWebRequest
 import org.springframework.web.method.support.ModelAndViewContainer
@@ -27,7 +26,7 @@ class HandlerAdapterPostProcessor : BeanPostProcessor {
                     mavContainer: ModelAndViewContainer,
                     webRequest: NativeWebRequest) {
                     super.handleReturnValue(
-                        GlobalResponse(HttpStatus.OK, "성공", returnValue),
+                        GlobalResponse.success(returnValue),
                         returnType,
                         mavContainer,
                         webRequest
