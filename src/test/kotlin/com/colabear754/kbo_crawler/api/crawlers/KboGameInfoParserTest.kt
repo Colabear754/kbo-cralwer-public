@@ -225,7 +225,7 @@ class KboGameInfoParserTest : StringSpec({
         gameSchedule[2].homeTeam shouldBe Team.DOOSAN
         gameSchedule[2].awayScore shouldBe 11
         gameSchedule[2].homeScore shouldBe 5
-        gameSchedule[2].relay shouldBe "SPO-2T, MS-T"
+        gameSchedule[2].relay shouldBe "SPO-2T,MS-T"
         gameSchedule[2].stadium shouldBe "잠실"
         // 4경기
         gameSchedule[3].gameKey shouldBe "20250511-KIA-SSG-1"
@@ -261,7 +261,7 @@ class KboGameInfoParserTest : StringSpec({
         gameSchedule[6].homeTeam shouldBe Team.SSG
         gameSchedule[6].awayScore shouldBe 1
         gameSchedule[6].homeScore shouldBe 5
-        gameSchedule[6].relay shouldBe "MS-T, SPO-T"
+        gameSchedule[6].relay shouldBe "MS-T,SPO-T"
         gameSchedule[6].stadium shouldBe "문학"
         // 8경기 (롯데 vs KT 2차전)
         gameSchedule[7].gameKey shouldBe "20250511-LOTTE-KT-2"
@@ -270,7 +270,7 @@ class KboGameInfoParserTest : StringSpec({
         gameSchedule[7].homeTeam shouldBe Team.KT
         gameSchedule[7].awayScore shouldBe 1
         gameSchedule[7].homeScore shouldBe 1
-        gameSchedule[7].relay shouldBe "SS-T, KN-T"
+        gameSchedule[7].relay shouldBe "SS-T,KN-T"
         gameSchedule[7].stadium shouldBe "수원"
     }
 
