@@ -4,7 +4,6 @@ import com.colabear754.kbo_crawler.api.domain.enums.CancellationReason
 import com.colabear754.kbo_crawler.api.domain.enums.GameStatus
 import com.colabear754.kbo_crawler.api.domain.enums.SeriesType
 import com.colabear754.kbo_crawler.api.domain.enums.Team
-import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Page
 import com.microsoft.playwright.Playwright
 import io.kotest.core.spec.style.StringSpec
@@ -15,7 +14,7 @@ import java.time.LocalTime
 
 class KboGameInfoParserTest : StringSpec({
     fun <R> playwrightTest(html: String, block: Page.() -> R) = Playwright.create().use { playwright ->
-        playwright.chromium().launch(BrowserType.LaunchOptions().apply { headless = true }).use { browser ->
+        playwright.chromium().launch().use { browser ->
             browser.newContext().use { context -> context.newPage().run {
                 setContent(html)
                 block()

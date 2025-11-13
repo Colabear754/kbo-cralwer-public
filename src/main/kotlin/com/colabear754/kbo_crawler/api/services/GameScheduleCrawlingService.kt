@@ -4,7 +4,6 @@ import com.colabear754.kbo_crawler.api.domain.entities.GameInfo
 import com.colabear754.kbo_crawler.api.domain.enums.SeriesType
 import com.colabear754.kbo_crawler.api.dto.responses.CollectDataResponse
 import com.microsoft.playwright.Browser
-import com.microsoft.playwright.BrowserType
 import com.microsoft.playwright.Playwright
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -36,9 +35,10 @@ class GameScheduleCrawlingService(
         return gameInfoDataService.saveOrUpdateGameInfo(seasonGameInfo)
     }
 
-    private suspend fun <R> launchChromium(action: suspend Browser.() -> R): R = Playwright.create().use { playwright ->
-        playwright.chromium().launch(BrowserType.LaunchOptions().apply { headless = true }).use { browser ->
-            browser.action()
+    private suspend fun <R> launchChromium(action: suspend Browser.() -> R): R =
+        Playwright.create().use { playwright ->
+            playwright.chromium().launch().use { browser ->
+                browser.action()
+            }
         }
-    }
 }
