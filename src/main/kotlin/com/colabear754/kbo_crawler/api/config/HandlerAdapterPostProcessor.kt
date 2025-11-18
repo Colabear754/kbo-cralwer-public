@@ -16,8 +16,8 @@ class HandlerAdapterPostProcessor : BeanPostProcessor {
             val handlers = bean.returnValueHandlers ?: return bean
             val index = handlers.indexOfFirst { it is RequestResponseBodyMethodProcessor }
             val stringToGlobalResponseHandler = object : RequestResponseBodyMethodProcessor(bean.messageConverters) {
-                override fun supportsParameter(parameter: MethodParameter): Boolean {
-                    return parameter.parameterType == String::class.java
+                override fun supportsReturnType(returnType: MethodParameter): Boolean {
+                    return returnType.parameterType == String::class.java
                 }
 
                 override fun handleReturnValue(
