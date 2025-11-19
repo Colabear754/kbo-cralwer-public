@@ -8,7 +8,10 @@ import com.microsoft.playwright.Playwright
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 import org.springframework.stereotype.Service
+import kotlin.random.Random
+import kotlin.time.Duration.Companion.milliseconds
 
 private fun Browser.scrapeGameInfo(season: Int, month: Int, series: SeriesType): List<GameInfo> {
     TODO("크롤링 로직 실제 구현 필요")
@@ -27,8 +30,11 @@ class GameScheduleCrawlingService(
         // 1월부터 12월까지 해당 시즌/시리즈의 경기 일정을 비동기 수집 후 취합
         val seasonGameInfo = launchChromium { coroutineScope {
             seriesTypes.flatMap { type ->
-                (1..12).map { month -> async { scrapeGameInfo(season, month, type) } }
-                    .awaitAll().flatten()
+                (1..12).map { month -> async {
+                    // KBO 서버 부하 방지를 위한 랜덤 딜레이(0.1 ~ 0.5초)
+                    delay(Random.nextLong(100, 500).milliseconds)
+                    scrapeGameInfo(season, month, type)
+                } }.awaitAll().flatten()
             }
         } }
 
