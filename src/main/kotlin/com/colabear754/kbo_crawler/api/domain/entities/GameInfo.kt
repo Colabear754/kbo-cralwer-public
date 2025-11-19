@@ -71,4 +71,14 @@ class GameInfo(
 
         return isUpdated
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is GameInfo) return false
+        return gameKey == other.gameKey
+    }
+
+    override fun hashCode(): Int {
+        return gameKey.hashCode()
+    }
 }
